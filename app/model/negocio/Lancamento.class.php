@@ -7,7 +7,7 @@ class Lancamento extends TRecord
 {
     const TABLENAME = 'public.lancamento';
     const PRIMARYKEY= 'id';
-    const IDPOLICY =  'serial'; // {max, serial}
+    const IDPOLICY =  'max'; // {max, serial}
    
     private $system_user;
    
