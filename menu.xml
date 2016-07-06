@@ -1,0 +1,86 @@
+<menu>
+    <menuitem label='Admin geral'>
+        <icon>fa:university fa-fw</icon>
+        <menu>
+              <menuitem label='Programas'>
+                  <icon>fa:file-code-o fa-fw</icon>
+                  <action>SystemProgramList</action>
+              </menuitem>
+              <menuitem label='Grupos'>
+                  <icon>fa:users fa-fw</icon>
+                  <action>SystemGroupList</action>
+              </menuitem>
+              <menuitem label='Usuários'>
+                  <icon>fa:user fa-fw</icon>
+                  <action>SystemUserList</action>
+              </menuitem>
+              <menuitem label='SQL Panel'>
+                  <icon>fa:table fa-fw</icon>
+                  <action>SystemSQLPanel</action>
+              </menuitem>
+              <menuitem label='PHP Info'>
+                  <icon>fa:code fa-fw</icon>
+                  <action>SystemPHPInfoView</action>
+              </menuitem>
+        </menu>
+    </menuitem>
+    <menuitem label="Gerenciamento">
+         <icon>fa: fa-cogs</icon>
+         <menu>
+              <menuitem label='Lancamentos clientes'>
+                  <icon>fa: fa-money</icon>
+                  <action>LancamentoFormAdm</action>
+              </menuitem>
+              <menuitem label='Consulta lancamentos'>
+                  <icon>fa: fa-file-text-o</icon>
+                  <action>LancamentoListAdm</action>
+              </menuitem>
+        </menu>
+    </menuitem>
+    
+    <menuitem label='Logs'>
+        <icon>fa:desktop fa-fw</icon>
+        <menu>
+              <menuitem label='Log de acessos'>
+                  <icon>fa:key fa-fw</icon>
+                  <action>SystemAccessLogList</action>
+              </menuitem>
+              <menuitem label='Log de alterações'>
+                  <icon>fa:film fa-fw</icon>
+                  <action>SystemChangeLogView</action>
+              </menuitem>
+              <menuitem label='SQL Log'>
+                  <icon>fa:database fa-fw</icon>
+                  <action>SystemSqlLogList</action>
+              </menuitem>
+        </menu>
+    </menuitem>
+    
+    <menuitem label='Inicio'>
+        <icon>fa: fa-home</icon>
+        <menu>
+            <menuitem label="Saldo">
+                <icon>fa: fa-money</icon>        
+                <action>WelcomeView</action>    
+            </menuitem>
+            <menuitem label='Lançamentos'>
+                <icon>fa: fa-file-text-o</icon>
+                <action>LancamentoList</action>
+            </menuitem>
+        </menu>
+    </menuitem>
+
+    <menuitem label='Outras ações'>
+        <icon>fa: fa-plus-square-o</icon>
+        <menu>
+              <menuitem label='Perfil'>
+                  <icon>fa: fa-user</icon>
+                  <action>SystemProfileView</action>
+              </menuitem>
+              <menuitem label='Sair'>
+                  <action>LoginForm#method=onLogout#static=1</action>
+                  <icon>fa:sign-out fa-fw</icon>
+              </menuitem>
+        </menu>
+    </menuitem>
+</menu>
