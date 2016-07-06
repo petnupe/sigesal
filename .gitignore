@@ -1,0 +1,11 @@
+/app/config/*
+/lib/*
+*.xls
+*.xlsx
+*.pdf
+*.ini
+*.jpg
+*.png
+*.gif
+*.txt
+*.csv
