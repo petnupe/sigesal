@@ -10,10 +10,6 @@ class LancamentoFormAdm extends TPage
 {
 	protected $form; // form
 
-	/**
-     * Form constructor
-     * @param $param Request
-     */
 	public function __construct( $param )
 	{
 		parent::__construct();
@@ -21,7 +17,7 @@ class LancamentoFormAdm extends TPage
 		$container = new TVBox;
 		$container->style = 'width: 90%';
 		// $container->add(new TXMLBreadCrumb('menu.xml', __CLASS__));
-		$container->add(TPanelGroup::pack('Title', $this->form));
+		$container->add(TPanelGroup::pack('Lançamentos para clientes', $this->form));
 
 		parent::add($container);
 	}
@@ -30,12 +26,11 @@ class LancamentoFormAdm extends TPage
 	// creates the form
 		$this->form = new TQuickForm('form_Lancamento');
 		$this->form->class = 'tform'; // change CSS class
-		//$this->form = new BootstrapFormWrapper($this->form);
-		//$this->form->style = 'display: table;width:100%'; // change style
-		// define the form title
+		
 		$this->form->setFormTitle('Lancamento');
+		
 		// create the form fields
-		$id = new TEntry('id');
+		
 		$data_lancamento = new TDate('data_lancamento');
 		$valorBase = new TEntry('valor_base');
 		$valorBase->setValue($this->getValorBase());
@@ -48,9 +43,10 @@ class LancamentoFormAdm extends TPage
 		
 		$tipo = new TCombo('tipo');
         $tipo->addItems(['-1' => 'Compra', '1' => 'Pagamento']);
+        $tipo->setValue(-1);
 
 		// add the fields
-		$this->form->addQuickField('Id', $id,  100 );
+
 		$this->form->addQuickField('Cliente', $this->getTDBComboClientes(),  300 , new TRequiredValidator);
 		$this->form->addQuickField('Data lancamento', $data_lancamento,  100 , new TRequiredValidator);
 		$this->form->addQuickField('Valor base', $valorBase,  100);
@@ -58,7 +54,6 @@ class LancamentoFormAdm extends TPage
 		$this->form->addQuickField('Tipo', $tipo,  100 , new TRequiredValidator);
 		$this->form->addQuickField('Valor total', $valor,  100 , new TRequiredValidator);
 		$this->form->addQuickField('Descricao', $descricao, 500);
-		$id->setEditable(FALSE);
 		$valor->setEditable(false);
 
 		// create the form actions
@@ -97,18 +92,12 @@ class LancamentoFormAdm extends TPage
 
 		try {
 			TTransaction::open('app');
-
 			$Produto = new Produto(1);
-
-
 			TTransaction::close();
-
 			return $Produto->valor;
-
 		}catch (SQLException $e) {
 			new TMessage('error', $e->getMessage());
 		}
-
 	}
 
 	public function onSave( $param )
@@ -124,7 +113,6 @@ class LancamentoFormAdm extends TPage
             **/
 
 			$this->form->validate(); // validate form data
-
 			$object = new Lancamento;  // create an empty object
 			$data = $this->form->getData(); // get form data as array
 			$data->valor = ($data->valor * $data->tipo);
@@ -134,6 +122,7 @@ class LancamentoFormAdm extends TPage
 
 			// get the generated id
 			$data->id = $object->id;
+			$data->id = null;
 
 			$this->form->setData($data); // fill form data
 			TTransaction::close(); // close the transaction
