@@ -1,9 +1,0 @@
-/app/config/*
-/lib/*
-*.jpg
-*.xls
-*.xlsx
-*.pdf
-*.txt
-*.ini
-*.db
