@@ -21,7 +21,7 @@ class LancamentoFormAdmEdit extends TPage
         $this->form->style = 'display: table;width:100%'; // change style
         
         // define the form title
-        $this->form->setFormTitle('Lancamento');
+        $this->form->setFormTitle('Lançamento');
 
         // create the form fields
         $id = new TEntry('id');
@@ -54,7 +54,7 @@ class LancamentoFormAdmEdit extends TPage
         // $container->add(new TXMLBreadCrumb('menu.xml', __CLASS__));
         $container->add($this->form);
         
-        parent::add($container);
+        parent::add($container->add(TPanelGroup::pack('Alteração de lançamentos', $this->form)));
     }
 
     /**
@@ -65,7 +65,7 @@ class LancamentoFormAdmEdit extends TPage
     {
         try
         {
-            TTransaction::open('db'); // open a transaction
+            TTransaction::open('app'); // open a transaction
             $this->form->validate(); // validate form data
             $object = new Lancamento;  // create an empty object
             $data = $this->form->getData(); // get form data as array
@@ -113,7 +113,7 @@ class LancamentoFormAdmEdit extends TPage
             if (isset($param['key']))
             {
                 $key = $param['key'];  // get the parameter $key
-                TTransaction::open('db'); // open a transaction
+                TTransaction::open('app'); // open a transaction
                 $object = new Lancamento($key); // instantiates the Active Record
 
                 $User = new SystemUser($object->cliente_id);

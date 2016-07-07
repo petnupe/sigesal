@@ -1,5 +1,5 @@
 <menu>
-    <menuitem label='Admin geral'>
+    <menuitem label='Sistema'>
         <icon>fa:university fa-fw</icon>
         <menu>
               <menuitem label='Programas'>
@@ -34,6 +34,15 @@
               <menuitem label='Consulta lancamentos'>
                   <icon>fa: fa-file-text-o</icon>
                   <action>LancamentoListAdm</action>
+              </menuitem>
+        </menu>
+    </menuitem>
+    <menuitem label="Relatórios">
+         <icon>fa: fa fa-file-text</icon>
+         <menu>
+              <menuitem label='Analítico por clientes'>
+                  <icon>fa: fa fa-file-text-o</icon>
+                  <action>LancamentoSinteticoPorClienteReport</action>
               </menuitem>
         </menu>
     </menuitem>

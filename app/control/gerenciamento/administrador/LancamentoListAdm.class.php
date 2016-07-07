@@ -25,7 +25,6 @@ class LancamentoListAdm extends TPage
         // creates the form
         $this->form = new TQuickForm('form_search_Lancamento');
         $this->form->class = 'tform'; // change CSS class
-        $this->form = new BootstrapFormWrapper($this->form);
         $this->form->style = 'display: table;width:100%'; // change style
         $this->form->setFormTitle('Lancamento');
 
@@ -38,7 +37,7 @@ class LancamentoListAdm extends TPage
         $this->form->addQuickField('Data inicial', $data_lancamento,  200 );
         $this->form->addQuickField('Data final', $data_final,  200 );
         $this->form->addQuickField('Cliente', TDBComboClientes::getTDBComboClientesPorGrupo(3),  200 );
-        $this->form->addQuickField('Tipo', TComboTipos::getTComboTipos(),  200 );
+        $this->form->addQuickField('Tipo', TComboTipos::getTComboTipos('list_tipo'),  200 );
         $this->form->addQuickField('Saldo da pesquisa', $this->saldoPesquisa,  100 );
         
         // keep the form filled during navigation with session data
@@ -47,6 +46,7 @@ class LancamentoListAdm extends TPage
         // add the search form actions
         $this->form->addQuickAction(_t('Find'), new TAction(array($this, 'onSearch')), 'fa:search');
         $this->form->addQuickAction(_t('New'),  new TAction(array('LancamentoFormAdmEdit', 'onEdit')), 'bs:plus-sign green');
+       
         
         // creates a Datagrid
         $this->datagrid = new TDataGrid;
@@ -56,6 +56,7 @@ class LancamentoListAdm extends TPage
 
         // creates the datagrid columns
         $column_check = new TDataGridColumn('check', '', 'center');
+        $column_id_lancamento = new TDataGridColumn('id', 'ID', 'left');
         $column_data_lancamento = new TDataGridColumn('data_lancamento', 'Data Lancamento', 'left');
         $column_valor = new TDataGridColumn('valor', 'Valor', 'right');
         $column_descricao = new TDataGridColumn('descricao', 'Descricao', 'left');
@@ -63,6 +64,7 @@ class LancamentoListAdm extends TPage
 
         // add the columns to the DataGrid
         $this->datagrid->addColumn($column_check);
+        $this->datagrid->addColumn($column_id_lancamento);
         $this->datagrid->addColumn($column_data_lancamento);
         $this->datagrid->addColumn($column_valor);
         $this->datagrid->addColumn($column_descricao);
@@ -164,7 +166,7 @@ class LancamentoListAdm extends TPage
         TSession::setValue('LancamentoListAdm_filter_data_lancamento',   NULL);
         TSession::setValue('LancamentoListAdm_filter_data_final',   NULL);
         TSession::setValue('LancamentoListAdm_filter_cliente_id',   NULL);
-        TSession::setValue('LancamentoListAdm_filter_tipo',   NULL);
+        TSession::setValue('LancamentoListAdm_filter_list_tipo',   NULL);
 
         if (isset($data->data_lancamento) AND ($data->data_lancamento)) {
             $filter = new TFilter('data_lancamento', '>=', "$data->data_lancamento"); // create the filter
@@ -176,10 +178,10 @@ class LancamentoListAdm extends TPage
             TSession::setValue('LancamentoListAdm_filter_data_final',   $filter); // stores the filter in the session
         }
 
-        if (isset($data->tipo) AND ($data->tipo)) {
-            $operador = $data->tipo === '-1' ? '<=' : '>=';
+        if (isset($data->list_tipo) AND ($data->list_tipo)) {
+            $operador = $data->list_tipo === '-1' ? '<=' : '>=';
             $filter = new TFilter('valor', $operador, "0"); // create the filter
-            TSession::setValue('LancamentoListAdm_filter_tipo',   $filter); // stores the filter in the session
+            TSession::setValue('LancamentoListAdm_filter_list_tipo',   $filter); // stores the filter in the session
         }
 
         if (isset($data->cliente_id) AND ($data->cliente_id)) {
@@ -237,8 +239,8 @@ class LancamentoListAdm extends TPage
                 $criteria->add(TSession::getValue('LancamentoListAdm_filter_cliente_id')); // add the session filter
             }
 
-            if (TSession::getValue('LancamentoListAdm_filter_tipo')) {
-                $criteria->add(TSession::getValue('LancamentoListAdm_filter_tipo')); // add the session filter
+            if (TSession::getValue('LancamentoListAdm_filter_list_tipo')) {
+                $criteria->add(TSession::getValue('LancamentoListAdm_filter_list_tipo')); // add the session filter
             }
             
             // load the objects according to criteria
