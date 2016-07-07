@@ -11,6 +11,8 @@ class LancamentoListAdm extends TPage
     private $formgrid;
     private $loaded;
     private $deleteButton;
+
+    public $saldoPesquisa;
     
     /**
      * Class constructor
@@ -26,17 +28,19 @@ class LancamentoListAdm extends TPage
         $this->form = new BootstrapFormWrapper($this->form);
         $this->form->style = 'display: table;width:100%'; // change style
         $this->form->setFormTitle('Lancamento');
-        
 
         // create the form fields
         $data_lancamento = new TDate('data_lancamento');
         $data_final = new TDate('data_final');
-
+        $this->saldoPesquisa = new TEntry('saldo');
+        
+        //$saldoPesquisa->setValue($this->boxSaldo);
         // add the fields
         $this->form->addQuickField('Data inicial', $data_lancamento,  200 );
         $this->form->addQuickField('Data final', $data_final,  200 );
-        $this->form->addQuickField('Cliente', $this->getTDBComboClientes(),  200 );
-
+        $this->form->addQuickField('Cliente', TDBComboClientes::getTDBComboClientesPorGrupo(3),  200 );
+        $this->form->addQuickField('Tipo', TComboTipos::getTComboTipos(),  200 );
+        $this->form->addQuickField('Saldo da pesquisa', $this->saldoPesquisa,  100 );
         
         // keep the form filled during navigation with session data
         $this->form->setData( TSession::getValue('Lancamento_filter_data') );
@@ -65,24 +69,16 @@ class LancamentoListAdm extends TPage
         $this->datagrid->addColumn($column_descricao);
         $this->datagrid->addColumn($column_cliente_id);
 
-        // inline editing
-        $data_lancamento_edit = new TDataGridAction(array($this, 'onInlineEdit'));
-        $data_lancamento_edit->setField('id');
-        $column_data_lancamento->setEditAction($data_lancamento_edit);
-        
-        $valor_edit = new TDataGridAction(array($this, 'onInlineEdit'));
-        $valor_edit->setField('id');
-        $column_valor->setEditAction($valor_edit);
-        
-        $descricao_edit = new TDataGridAction(array($this, 'onInlineEdit'));
-        $descricao_edit->setField('id');
-        $column_descricao->setEditAction($descricao_edit);
-
         // define the transformer method over image
         $column_data_lancamento->setTransformer( function($value, $object, $row) {
             $date = new DateTime($value);
             return $date->format('d/m/Y');
         });
+        
+        $column_descricao->setTransformer(function ($value, $object, $row){
+                $value = trim($value) ? $value : ' ';
+                return $value;
+            });
         
         TTransaction::open('app');
         $column_cliente_id->setTransformer(function($value, $object, $row){
@@ -93,7 +89,6 @@ class LancamentoListAdm extends TPage
 
         // define the transformer method over image
         $column_valor->setTransformer( function($value, $object, $row) {
-        
             $cor = ($value > 0) ? 'green' :'red'; 
             return '<span style="color:'.$cor.'">R$ ' . number_format($value, 2, ',', '.').'</span>';
         });
@@ -128,7 +123,6 @@ class LancamentoListAdm extends TPage
         $this->pageNavigation = new TPageNavigation;
         $this->pageNavigation->setAction(new TAction(array($this, 'onReload')));
         $this->pageNavigation->setWidth($this->datagrid->getWidth());
-        
         $this->datagrid->disableDefaultClick();
         
         // put datagrid inside a form
@@ -140,77 +134,25 @@ class LancamentoListAdm extends TPage
         $this->deleteButton->setAction(new TAction(array($this, 'onDeleteCollection')), AdiantiCoreTranslator::translate('Delete selected'));
         $this->deleteButton->setImage('fa:remove red');
         $this->formgrid->addField($this->deleteButton);
-        
+
         $gridpack = new TVBox;
         $gridpack->style = 'width: 100%';
         $gridpack->add($this->formgrid);
-        $gridpack->add($this->deleteButton)->style = 'background:whiteSmoke;border:1px solid #cccccc; padding: 3px;padding: 5px;';
-        
-        $this->transformCallback = array($this, 'onBeforeLoad');
 
+        $gridpack->add($this->deleteButton)->style = 'background:whiteSmoke;border:1px solid #cccccc; padding: 3px;padding: 5px;';
+        $this->transformCallback = array($this, 'onBeforeLoad');
 
         // vertical box container
         $container = new TVBox;
         $container->style = 'width: 90%';
         // $container->add(new TXMLBreadCrumb('menu.xml', __CLASS__));
-        $container->add(TPanelGroup::pack('Title', $this->form));
+        $container->add(TPanelGroup::pack('Pesquisa lançamentos', $this->form));
         $container->add($gridpack);
         $container->add($this->pageNavigation);
         
         parent::add($container);
     }
-    
-    /**
-     * Inline record editing
-     * @param $param Array containing:
-     *              key: object ID value
-     *              field name: object attribute to be updated
-     *              value: new attribute content 
-     */
      
-     private function getTDBComboClientes() {
-
-		TTransaction::open('app');
-		$criteria = new TCriteria;
-		$criteria->add(new TFilter('system_group_id', '=', '3'));
-		$repo = new TRepository('SystemUserGroup');
-		$codigos = $repo->load($criteria);
-		TTransaction::close();
-		$codUsers = array();
-		foreach ($codigos as $codigo) {
-			$codUsers[] = $codigo->system_user_id;
-		}
-
-		$criteria2 = new TCriteria;
-		$criteria2->add(new TFilter('id', 'in', $codUsers));
-		return new TDBCombo('cliente_id', 'app', 'SystemUser', 'id', 'name', 'name', $criteria2);
-	}
-     
-    public function onInlineEdit($param)
-    {
-        try
-        {
-            // get the parameter $key
-            $field = $param['field'];
-            $key   = $param['key'];
-            $value = $param['value'];
-            
-            TTransaction::open('app'); // open a transaction with database
-            $object = new Lancamento($key); // instantiates the Active Record
-            $object->{$field} = $value;
-            $object->store(); // update the object in the database
-            TTransaction::close(); // close the transaction
-            
-            $this->onReload($param); // reload the listing
-            new TMessage('info', "Record Updated");
-        }
-        catch (Exception $e) // in case of exception
-        {
-            new TMessage('error', '<b>Error</b> ' . $e->getMessage()); // shows the exception error message
-            TTransaction::rollback(); // undo all pending operations
-        }
-    }
-    
     /**
      * Register the filter in the session
      */
@@ -223,6 +165,7 @@ class LancamentoListAdm extends TPage
         TSession::setValue('LancamentoListAdm_filter_data_lancamento',   NULL);
         TSession::setValue('LancamentoListAdm_filter_data_final',   NULL);
         TSession::setValue('LancamentoListAdm_filter_cliente_id',   NULL);
+        TSession::setValue('LancamentoListAdm_filter_tipo',   NULL);
 
         if (isset($data->data_lancamento) AND ($data->data_lancamento)) {
             $filter = new TFilter('data_lancamento', '>=', "$data->data_lancamento"); // create the filter
@@ -234,12 +177,16 @@ class LancamentoListAdm extends TPage
             TSession::setValue('LancamentoListAdm_filter_data_final',   $filter); // stores the filter in the session
         }
 
+        if (isset($data->tipo) AND ($data->tipo)) {
+            $operador = $data->tipo === '-1' ? '<=' : '>=';
+            $filter = new TFilter('valor', $operador, "0"); // create the filter
+            TSession::setValue('LancamentoListAdm_filter_tipo',   $filter); // stores the filter in the session
+        }
 
         if (isset($data->cliente_id) AND ($data->cliente_id)) {
             $filter = new TFilter('cliente_id', '=', "{$data->cliente_id}"); // create the filter
             TSession::setValue('LancamentoListAdm_filter_cliente_id',   $filter); // stores the filter in the session
         }
-
         
         // fill the form with data again
         $this->form->setData($data);
@@ -265,7 +212,7 @@ class LancamentoListAdm extends TPage
             
             // creates a repository for Lancamento
             $repository = new TRepository('Lancamento');
-            $limit = 10;
+            $limit = 100;
             // creates a criteria
             $criteria = new TCriteria;
             
@@ -283,16 +230,17 @@ class LancamentoListAdm extends TPage
                 $criteria->add(TSession::getValue('LancamentoListAdm_filter_data_lancamento')); // add the session filter
             }
 
-
             if (TSession::getValue('LancamentoListAdm_filter_data_final')) {
                 $criteria->add(TSession::getValue('LancamentoListAdm_filter_data_final')); // add the session filter
             }
-
 
             if (TSession::getValue('LancamentoListAdm_filter_cliente_id')) {
                 $criteria->add(TSession::getValue('LancamentoListAdm_filter_cliente_id')); // add the session filter
             }
 
+            if (TSession::getValue('LancamentoListAdm_filter_tipo')) {
+                $criteria->add(TSession::getValue('LancamentoListAdm_filter_tipo')); // add the session filter
+            }
             
             // load the objects according to criteria
             $objects = $repository->load($criteria, FALSE);
@@ -302,16 +250,22 @@ class LancamentoListAdm extends TPage
                 call_user_func($this->transformCallback, $objects, $param);
             }
             
+            $totalPesquisa = 0;
             $this->datagrid->clear();
             if ($objects)
             {
                 // iterate the collection of active records
-                foreach ($objects as $object)
-                {
+                foreach ($objects as $object) {
                     // add the object inside the datagrid
+                    $totalPesquisa += $object->valor;
                     $this->datagrid->addItem($object);
                 }
             }
+            
+            $cor = ($totalPesquisa < 0 ) ? 'red' : 'green'; 
+            $this->saldoPesquisa->style = "background-color: white; text-align:right; font-weight:bold; font-size: 18px; color:$cor;";            
+            $this->saldoPesquisa->setValue(FuncoesAuxiliares::formata_valor_monetario($totalPesquisa));
+            $this->saldoPesquisa->setEditable(false);
             
             // reset the criteria for record count
             $criteria->resetProperties();

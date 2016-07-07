@@ -19,6 +19,4 @@ class Produto extends TRecord
         parent::addAttribute('nome');
         parent::addAttribute('valor');
     }
-
-
 }

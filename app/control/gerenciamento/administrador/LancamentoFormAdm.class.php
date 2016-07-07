@@ -41,10 +41,8 @@ class LancamentoFormAdm extends TPage
 		$valor->setValue($valorBase->getValue());
 		$descricao = new TEntry('descricao');
 		
-		$tipo = new TCombo('tipo');
-        $tipo->addItems(['-1' => 'Compra', '1' => 'Pagamento']);
-        $tipo->setValue(-1);
-
+		$tipo = TComboTipos::getTComboTipos(-1);
+        
 		// add the fields
 
 		$this->form->addQuickField('Cliente', $this->getTDBComboClientes(),  300 , new TRequiredValidator);
@@ -115,10 +113,16 @@ class LancamentoFormAdm extends TPage
 			$this->form->validate(); // validate form data
 			$object = new Lancamento;  // create an empty object
 			$data = $this->form->getData(); // get form data as array
+            
+            // Seta o valor conforme tipo e armazena valor original
+			$valorOriginal = $data->valor;
 			$data->valor = ($data->valor * $data->tipo);
-			
+
 			$object->fromArray( (array) $data); // load the object with data
 			$object->store(); // save the object
+
+            // Atribui o valor original ao form para caso de novo lançamento.
+            $data->valor = $valorOriginal;
 
 			// get the generated id
 			$data->id = $object->id;

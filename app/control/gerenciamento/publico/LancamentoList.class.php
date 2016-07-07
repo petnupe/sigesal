@@ -45,9 +45,10 @@ class LancamentoList extends TPage
         // creates the datagrid columns
         $column_data_lancamento = new TDataGridColumn('data_lancamento', 'Dt. Lct.', 'left');
         $column_valor = new TDataGridColumn('valor', 'Valor', 'right');
-        $column_descricao = new TDataGridColumn('descricao', 'Descricao', 'left');
-
+        $column_descricao = new TDataGridColumn('descricao', 'Descrição', 'left');
+        $column_id = new TDataGridColumn('id', 'Cód lançamento', 'rigth');
         // add the columns to the DataGrid
+        $this->datagrid->addColumn($column_id);
         $this->datagrid->addColumn($column_data_lancamento);
         $this->datagrid->addColumn($column_valor);
         $this->datagrid->addColumn($column_descricao);
@@ -146,9 +147,10 @@ class LancamentoList extends TPage
             // default order
             if (empty($param['order']))
             {
-                $param['order'] = 'data_lancamento';
+                $param['order'] = 'id';
                 $param['direction'] = 'desc';
             }
+            
             $criteria->setProperties($param); // order, offset
             $criteria->setProperty('limit', $limit);
             
@@ -165,7 +167,7 @@ class LancamentoList extends TPage
             
             // load the objects according to criteria
             $objects = $repository->load($criteria, FALSE);
-            
+
             if (is_callable($this->transformCallback))
             {
                 call_user_func($this->transformCallback, $objects, $param);
