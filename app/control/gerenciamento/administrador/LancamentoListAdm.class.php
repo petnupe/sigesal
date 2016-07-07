@@ -34,8 +34,7 @@ class LancamentoListAdm extends TPage
         $data_final = new TDate('data_final');
         $this->saldoPesquisa = new TEntry('saldo');
         
-        //$saldoPesquisa->setValue($this->boxSaldo);
-        // add the fields
+                // add the fields
         $this->form->addQuickField('Data inicial', $data_lancamento,  200 );
         $this->form->addQuickField('Data final', $data_final,  200 );
         $this->form->addQuickField('Cliente', TDBComboClientes::getTDBComboClientesPorGrupo(3),  200 );
@@ -47,7 +46,7 @@ class LancamentoListAdm extends TPage
         
         // add the search form actions
         $this->form->addQuickAction(_t('Find'), new TAction(array($this, 'onSearch')), 'fa:search');
-        $this->form->addQuickAction(_t('New'),  new TAction(array('LancamentoFormAdm', 'onEdit')), 'bs:plus-sign green');
+        $this->form->addQuickAction(_t('New'),  new TAction(array('LancamentoFormAdmEdit', 'onEdit')), 'bs:plus-sign green');
         
         // creates a Datagrid
         $this->datagrid = new TDataGrid;
@@ -99,7 +98,7 @@ class LancamentoListAdm extends TPage
         $column_valor->setAction($order_valor);
         
         // create EDIT action
-        $action_edit = new TDataGridAction(array('LancamentoFormAdm', 'onEdit'));
+        $action_edit = new TDataGridAction(array('LancamentoFormAdmEdit', 'onEdit'));
         $action_edit->setUseButton(TRUE);
         $action_edit->setButtonClass('btn btn-default');
         $action_edit->setLabel(_t('Edit'));

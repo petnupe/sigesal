@@ -7,10 +7,10 @@ class LancamentoList extends TPage
     private $pageNavigation;
     private $formgrid;
     private $loaded;
-    private $panelTotal;
     
-    public function __construct()
-    {
+    public $saldoPesquisa;
+   
+    public function __construct() {
         parent::__construct();
         
         // creates the form
@@ -19,6 +19,7 @@ class LancamentoList extends TPage
         $this->form = new BootstrapFormWrapper($this->form);
         $this->form->style = 'display: table;width:100%'; // change style
         $this->form->setFormTitle('Lancamento');
+        $this->saldoPesquisa = new TEntry('saldo');
         
         $this->panelTotal = new TVBox;
         
@@ -29,6 +30,8 @@ class LancamentoList extends TPage
         // add the fields
         $this->form->addQuickField('Data inicial', $data_lancamento,  200 );
         $this->form->addQuickField('Data final', $data_final,  200 );
+        $this->form->addQuickField('Tipo', TComboTipos::getTComboTipos(),  200 );
+        $this->form->addQuickField('Saldo da pesquisa', $this->saldoPesquisa,  100 );
         
         // keep the form filled during navigation with session data
         $this->form->setData( TSession::getValue('Lancamento_filter_data') );
@@ -88,7 +91,6 @@ class LancamentoList extends TPage
         $container->add($this->datagrid);
         $container->add($this->panelTotal);
         $container->add($this->pageNavigation);
-        
         parent::add($container);
     }
     
@@ -100,6 +102,7 @@ class LancamentoList extends TPage
         // clear session filters
         TSession::setValue('LancamentoList_filter_data_lancamento',   NULL);
         TSession::setValue('LancamentoList_filter_data_final',   NULL);
+        TSession::setValue('LancamentoList_filter_tipo',   NULL);
 
         if (isset($data->data_lancamento) AND ($data->data_lancamento)) {
             $filter = new TFilter('data_lancamento', '>=', "$data->data_lancamento"); // create the filter
@@ -109,6 +112,13 @@ class LancamentoList extends TPage
         if (isset($data->data_final) AND ($data->data_final)) {
             $filter = new TFilter('data_lancamento', '<=', "$data->data_final"); // create the filter
             TSession::setValue('LancamentoList_filter_data_final',   $filter); // stores the filter in the session
+        }
+        
+        if (isset($data->tipo) AND ($data->tipo)) {
+            $operador = $data->tipo < 0 ? '<=' : '>='; 
+
+            $filter = new TFilter('valor', $operador, "0"); // create the filter
+            TSession::setValue('LancamentoList_filter_tipo',   $filter); // stores the filter in the session
         }
         
         // fill the form with data again
@@ -162,6 +172,10 @@ class LancamentoList extends TPage
             if (TSession::getValue('LancamentoList_filter_data_final')) {
                 $criteria->add(TSession::getValue('LancamentoList_filter_data_final')); // add the session filter
             }
+            
+            if (TSession::getValue('LancamentoList_filter_tipo')) {
+                $criteria->add(TSession::getValue('LancamentoList_filter_tipo')); // add the session filter
+            }
 
             $criteria->add(new TFilter('cliente_id', '=', TSession::getValue('userid')));
             
@@ -174,13 +188,16 @@ class LancamentoList extends TPage
             }
             
             $this->datagrid->clear();
+            
+            $totalPesquisa = 0;
+            
             if ($objects)
             {
                 // iterate the collection of active records
                 foreach ($objects as $object)
                 {
                     // add the object inside the datagrid
-                    $total += $object->valor;
+                    $totalPesquisa += $object->valor;
                     $this->datagrid->addItem($object);
                 }
             }
@@ -192,9 +209,10 @@ class LancamentoList extends TPage
             $this->pageNavigation->setProperties($param); // order, page
             $this->pageNavigation->setLimit($limit); // limit
             
-            $cor = ($total < 0 ) ? 'red' : 'green'; 
-            $this->panelTotal->style = "font-weight:bold; font-size: 14px; margin-left: 10%; color:$cor;";            
-            $this->panelTotal->add('O saldo da pesquisa é: ' . FuncoesAuxiliares::formata_valor_monetario($total));
+            $cor = ($totalPesquisa < 0 ) ? 'red' : 'green'; 
+            $this->saldoPesquisa->style = "background-color: white; text-align:right; font-weight:bold; font-size: 18px; color:$cor;";            
+            $this->saldoPesquisa->setValue(FuncoesAuxiliares::formata_valor_monetario($totalPesquisa));
+            $this->saldoPesquisa->setEditable(false);
             
             // close the transaction
             TTransaction::close();

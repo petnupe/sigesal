@@ -2,7 +2,7 @@
 
 class TDBComboClientes {
 
-    public static function getTDBComboClientesPorGrupo($grupo) {
+    public static function getTDBComboClientesPorGrupo($grupo = null) {
 		
 		$grupo = trim($grupo) ? $grupo : '3';
 		

@@ -6,7 +6,7 @@ class TComboTipos {
     public static function getTComboTipos($selected = null) {
         $combo = new TCombo('tipo');
         $combo->addItems(TComboTipos::$tipos);
-        //$combo->setValue($selected ? $selected : -1);
+        $combo->setValue($selected ? $selected : -1);
         return $combo;
     }
 } 
