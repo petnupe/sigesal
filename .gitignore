@@ -1,3 +1,4 @@
+.gitignore
 /app/config/*
 /lib/*
 *.xls
