@@ -124,7 +124,7 @@ class LancamentoSinteticoPorClienteReport extends TPage
                 // footer row
                 
                 $tr->addRow();
-                $tr->addCell('Total: ' . $total, 'right', 'footer', 5);
+                $tr->addCell('Total: ' . FuncoesAuxiliares::formata_valor_monetario($total), 'right', 'footer', 5);
                 
                 $tr->addRow();
                 $tr->addCell(date('Y-m-d h:i:s'), 'center', 'footer', 4);
