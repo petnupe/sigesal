@@ -45,7 +45,7 @@ class LancamentoListAdm extends TPage
         
         // add the search form actions
         $this->form->addQuickAction(_t('Find'), new TAction(array($this, 'onSearch')), 'fa:search');
-        $this->form->addQuickAction(_t('New'),  new TAction(array('LancamentoFormAdmEdit', 'onEdit')), 'bs:plus-sign green');
+        $this->form->addQuickAction(_t('New'),  new TAction(array('LancamentoFormAdm', 'montaForm')), 'bs:plus-sign green');
        
         
         // creates a Datagrid
