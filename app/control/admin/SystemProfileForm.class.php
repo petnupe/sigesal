@@ -9,6 +9,7 @@ class SystemProfileForm extends TPage
         
         $this->form = new TQuickForm;
         $this->form->class = 'tform';
+        $this->form = new BootstrapFormWrapper($this->form);
         $this->form->setFormTitle(_t('Profile'));
         
         $name  = new TEntry('name');

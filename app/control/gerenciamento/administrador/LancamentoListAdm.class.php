@@ -26,6 +26,7 @@ class LancamentoListAdm extends TPage
         $this->form = new TQuickForm('form_search_Lancamento');
         $this->form->class = 'tform'; // change CSS class
         $this->form->style = 'display: table;width:100%'; // change style
+        $this->form = new BootstrapFormWrapper($this->form);
         $this->form->setFormTitle('Lancamento');
 
         // create the form fields

@@ -18,6 +18,7 @@ class LancamentoFormAdmEdit extends TPage
         // creates the form
         $this->form = new TQuickForm('form_Lancamento');
         $this->form->class = 'tform'; // change CSS class
+        $this->form = new BootstrapFormWrapper($this->form);
         $this->form->style = 'display: table;width:100%'; // change style
         
         // define the form title

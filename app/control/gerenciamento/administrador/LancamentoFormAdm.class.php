@@ -22,6 +22,7 @@ class LancamentoFormAdm extends TPage
 	public function montaForm() {
 		$this->form = new TQuickForm('form_Lancamento');
 		$this->form->class = 'tform'; // change CSS class
+		$this->form = new BootstrapFormWrapper($this->form);
 		$this->form->setFormTitle('Lancamento');
 		
 		// create the form fields

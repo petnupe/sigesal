@@ -16,6 +16,7 @@ class LancamentoList extends TPage
         // creates the form
         $this->form = new TQuickForm('form_search_Lancamento');
         $this->form->class = 'tform'; // change CSS class
+        $this->form = new BootstrapFormWrapper($this->form);
         $this->form->style = 'display: table;width:100%'; // change style
         $this->form->setFormTitle('Lancamento');
         $this->saldoPesquisa = new TEntry('saldo');
