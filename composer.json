@@ -1,8 +1,14 @@
 {
+"name": "Nome do projeto",
+    "description": "Sistema de gerenciamento e acompanhamento da venda de salgados",
+    "authors": [
+        {
+            "name": "Peterson Nunes Pedroso",
+            "email": "pemadata@gmail.com"
+        }
+    ],
     "require": {
-        "ext-bcmath": "*",
-        "ext-memcached": "*",
-        "ext-mongo": "*",
-        "ext-xsl": "*"
+        "php": ">=5.2.8",
+	"ext-gd": "*"
     }
 }
