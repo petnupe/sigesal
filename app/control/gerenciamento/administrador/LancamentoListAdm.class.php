@@ -1,32 +1,22 @@
 <?php
-/**
- * LancamentoListAdm Listing
- * @author  <your name here>
- */
-class LancamentoListAdm extends TPage
-{
+
+class LancamentoListAdm extends TPage {
     private $form; // form
     private $datagrid; // listing
     private $pageNavigation;
     private $formgrid;
     private $loaded;
     private $deleteButton;
-
     public $saldoPesquisa;
     
-    /**
-     * Class constructor
-     * Creates the page, the form and the listing
-     */
-    public function __construct()
-    {
+    public function __construct() {
         parent::__construct();
         
         // creates the form
         $this->form = new TQuickForm('form_search_Lancamento');
         $this->form->class = 'tform'; // change CSS class
         $this->form->style = 'display: table;width:100%'; // change style
-        $this->form = new BootstrapFormWrapper($this->form);
+        //$this->form = new BootstrapFormWrapper($this->form);
         $this->form->setFormTitle('Lancamento');
 
         // create the form fields
@@ -34,12 +24,13 @@ class LancamentoListAdm extends TPage
         $data_final = new TDate('data_final');
         $this->saldoPesquisa = new TEntry('saldo');
         
-                // add the fields
-        $this->form->addQuickField('Data inicial', $data_lancamento,  200 );
-        $this->form->addQuickField('Data final', $data_final,  200 );
-        $this->form->addQuickField('Cliente', TDBComboClientes::getTDBComboClientesPorGrupo(3),  200 );
-        $this->form->addQuickField('Tipo', TComboTipos::getTComboTipos('list_tipo'),  200 );
-        $this->form->addQuickField('Saldo da pesquisa', $this->saldoPesquisa,  100 );
+        $itensPagina = new TSpinner('itensPagina');
+        $itensPagina->setRange(0, 1000, 10);
+       
+        $this->form->addQuickFields('Período', array($data_lancamento, new TLabel('à&nbsp;&nbsp;&nbsp;'), $data_final));
+        $this->form->addQuickFields('Cliente', array(TDBComboClientes::getTDBComboClientesPorGrupo(3), new TLabel('Tipo&nbsp;&nbsp;&nbsp;'), TComboTipos::getTComboTipos('list_tipo')));
+        $this->form->addQuickField('Saldo da pesquisa', $this->saldoPesquisa,  100);
+        $this->form->addQuickField('Itens por página', $itensPagina, 75);
         
         // keep the form filled during navigation with session data
         $this->form->setData( TSession::getValue('Lancamento_filter_data') );
@@ -163,6 +154,8 @@ class LancamentoListAdm extends TPage
         // get the search form data
         $data = $this->form->getData();
         
+        TSession::setValue('itensPagina', $data->itensPagina);
+        
         // clear session filters
         TSession::setValue('LancamentoListAdm_filter_data_lancamento',   NULL);
         TSession::setValue('LancamentoListAdm_filter_data_final',   NULL);
@@ -214,7 +207,9 @@ class LancamentoListAdm extends TPage
             
             // creates a repository for Lancamento
             $repository = new TRepository('Lancamento');
-            $limit = 100;
+            
+            $limit = TSession::getValue('itensPagina') > 0 ? TSession::getValue('itensPagina') : 20;
+            
             // creates a criteria
             $criteria = new TCriteria;
             
@@ -222,11 +217,10 @@ class LancamentoListAdm extends TPage
             if (empty($param['order']))
             {
                 $param['order'] = 'id';
-                $param['direction'] = 'asc';
+                $param['direction'] = 'desc';
             }
             $criteria->setProperties($param); // order, offset
             $criteria->setProperty('limit', $limit);
-            
 
             if (TSession::getValue('LancamentoListAdm_filter_data_lancamento')) {
                 $criteria->add(TSession::getValue('LancamentoListAdm_filter_data_lancamento')); // add the session filter
@@ -254,8 +248,7 @@ class LancamentoListAdm extends TPage
             
             $totalPesquisa = 0;
             $this->datagrid->clear();
-            if ($objects)
-            {
+            if ($objects) {
                 // iterate the collection of active records
                 foreach ($objects as $object) {
                     // add the object inside the datagrid

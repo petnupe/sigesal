@@ -40,7 +40,7 @@ class LancamentoFormAdm extends TPage
         $valor->style = 'font-size:22px; background-color:yellow; font-weight: bold;';
 		$valorBase->setExitAction(new TAction(array($this, 'atualizaTotal')));
 		$descricao = new TEntry('descricao');
-		$tipo = TComboTipos::getTComboTipos(null, '-1');
+		$tipo = TComboTipos::getTComboTipos(null);
         
 		// add the fields
 

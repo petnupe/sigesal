@@ -1,4 +1,45 @@
 <menu>
+
+    <menuitem label='Inicio'>
+        <icon>fa: fa-home</icon>
+        <menu>
+            <menuitem label="Saldo">
+                <icon>fa: fa-money</icon>        
+                <action>WelcomeView</action>    
+            </menuitem>
+            <menuitem label='Lançamentos'>
+                <icon>fa: fa-file-text-o</icon>
+                <action>LancamentoList</action>
+            </menuitem>
+        </menu>
+    </menuitem>
+   
+    <menuitem label="Gerenciamento">
+         <icon>fa: fa-cogs</icon>
+         <menu>
+              <menuitem label="Home Adm">
+                  <icon>fa: fa-home</icon>
+                  <action>InicialAdm</action>
+              </menuitem>
+              <menuitem label='Lancamentos clientes'>
+                  <icon>fa: fa-money</icon>
+                  <action>LancamentoFormAdm</action>
+              </menuitem>
+              <menuitem label='Consulta lancamentos'>
+                  <icon>fa: fa-file-text-o</icon>
+                  <action>LancamentoListAdm</action>
+              </menuitem>
+        </menu>
+    </menuitem>
+    <menuitem label="Relatórios">
+         <icon>fa: fa fa-file-text</icon>
+         <menu>
+              <menuitem label='Analítico por clientes'>
+                  <icon>fa: fa fa-file-text-o</icon>
+                  <action>LancamentoSinteticoPorClienteReport</action>
+              </menuitem>
+        </menu>
+    </menuitem>
     <menuitem label='Sistema'>
         <icon>fa:university fa-fw</icon>
         <menu>
@@ -24,29 +65,6 @@
               </menuitem>
         </menu>
     </menuitem>
-    <menuitem label="Gerenciamento">
-         <icon>fa: fa-cogs</icon>
-         <menu>
-              <menuitem label='Lancamentos clientes'>
-                  <icon>fa: fa-money</icon>
-                  <action>LancamentoFormAdm</action>
-              </menuitem>
-              <menuitem label='Consulta lancamentos'>
-                  <icon>fa: fa-file-text-o</icon>
-                  <action>LancamentoListAdm</action>
-              </menuitem>
-        </menu>
-    </menuitem>
-    <menuitem label="Relatórios">
-         <icon>fa: fa fa-file-text</icon>
-         <menu>
-              <menuitem label='Analítico por clientes'>
-                  <icon>fa: fa fa-file-text-o</icon>
-                  <action>LancamentoSinteticoPorClienteReport</action>
-              </menuitem>
-        </menu>
-    </menuitem>
-    
     <menuitem label='Logs'>
         <icon>fa:desktop fa-fw</icon>
         <menu>
@@ -62,20 +80,6 @@
                   <icon>fa:database fa-fw</icon>
                   <action>SystemSqlLogList</action>
               </menuitem>
-        </menu>
-    </menuitem>
-    
-    <menuitem label='Inicio'>
-        <icon>fa: fa-home</icon>
-        <menu>
-            <menuitem label="Saldo">
-                <icon>fa: fa-money</icon>        
-                <action>WelcomeView</action>    
-            </menuitem>
-            <menuitem label='Lançamentos'>
-                <icon>fa: fa-file-text-o</icon>
-                <action>LancamentoList</action>
-            </menuitem>
         </menu>
     </menuitem>
 
