@@ -1,17 +1,10 @@
 <?php
-/**
- * LancamentoSinteticoPorClienteReport Report
- * @author  <your name here>
- */
+
 class LancamentoSinteticoPorClienteReport extends TPage
 {
     protected $form; // form
     protected $notebook;
-    
-    /**
-     * Class constructor
-     * Creates the page and the registration form
-     */
+
     function __construct()
     {
         parent::__construct();
@@ -19,20 +12,22 @@ class LancamentoSinteticoPorClienteReport extends TPage
         // creates the form
         $this->form = new TQuickForm('form_Lancamento_report');
         $this->form->class = 'tform'; // change CSS class
-        
         $this->form->style = 'display: table;width:100%'; // change style
-        
         // define the form title
-        $this->form->setFormTitle('Lancamento Report');
+        $this->form->setFormTitle('Resumo sintético por clientes');
 
         // create the form fields
         $data_lancamento = new TDate('data_lancamento');
         $data_final   = new TDate('data_final');
+        $exibeZerados = new TRadioGroup('zerados');
+        $exibeZerados->setLayout('horizontal');
+        $exibeZerados->addItems(array('Nao', 'Sim'));
         $output_type  = new TRadioGroup('output_type');
 
         // add the fields
         $this->form->addQuickField('Data inicial', $data_lancamento,  100 );
         $this->form->addQuickField('Data final', $data_final,  100 );
+        $this->form->addQuickField('Mostrar zerados?', $exibeZerados,  100);
         $this->form->addQuickField('Output', $output_type,  100 , new TRequiredValidator);
         
         $output_type->addItems(array('html'=>'HTML', 'pdf'=>'PDF', 'rtf'=>'RTF'));;
@@ -52,13 +47,24 @@ class LancamentoSinteticoPorClienteReport extends TPage
     }
 
     function onGenerate() {
+        $out = null;
         
         try {
             TTransaction::open('app');
             $con = TTransaction::get();
             $formdata = $this->form->getData();
+            $out .= trim($formdata->data_lancamento) ? " and data_lancamento >= '".$formdata->data_lancamento."'" : null; 
+            $out .= trim($formdata->data_final) ? " and data_lancamento <= '".$formdata->data_final."'" : null;
             
-            $q ="select sum(l.valor) as total, u.name as nome from lancamento as l inner join system_user as u on u.id = l.cliente_id where l.data_lancamento between '".$formdata->data_lancamento."' and '".$formdata->data_final."' group by u.id order by name";
+            $zerados = ($formdata->zerados == '1') ? null : 'having sum(l.valor) < 0';
+            
+            $q ="select sum(l.valor) as total, u.name as nome from lancamento as l inner join system_user as u on u.id = l.cliente_id 
+            where 1 = 1 
+            ".$out." 
+            group by u.id 
+            ".$zerados."
+            order by name";
+           
             $result = $con->query($q);
             $objects = null;
             $total = 0;
@@ -68,7 +74,6 @@ class LancamentoSinteticoPorClienteReport extends TPage
                 $object->name = $linha['nome'];
                 $object->total = $linha['total'];
                 $objects[] = $object;
-                
                 $total += $linha['total'];
             }
 
@@ -101,7 +106,7 @@ class LancamentoSinteticoPorClienteReport extends TPage
                 
                 // add a header row
                 $tr->addRow();
-                $tr->addCell("Lancamentos (".join(' e ', [$formdata->data_lancamento, $formdata->data_final]).")", 'center', 'header', 4);
+                $tr->addCell("Lancamentos (".join(' e ', [$formdata->data_lancamento, $formdata->data_final]).")", 'center', 'header', 2);
                 
                 // add titles row
                 $tr->addRow();
@@ -114,20 +119,20 @@ class LancamentoSinteticoPorClienteReport extends TPage
                 // data rows
                 foreach ($objects as $object)
                 {
-                    $style = $colour ? 'datap' : 'datai';
-                    $tr->addRow();
-                    $tr->addCell($object->name, 'left', $style);
-                    $tr->addCell(FuncoesAuxiliares::formata_valor_monetario($object->total), 'right', $style);
-                    $colour = !$colour;
+                    //if($object->total > 0.00) {
+                        $style = $colour ? 'datap' : 'datai';
+                        $tr->addRow();
+                        $tr->addCell($object->name, 'left', $style);
+                        $tr->addCell(FuncoesAuxiliares::formata_valor_monetario($object->total), 'right', $style);
+                        $colour = !$colour;
+                    //}
                 }
                 
-                // footer row
+                $tr->addRow();
+                $tr->addCell('Total: ' . FuncoesAuxiliares::formata_valor_monetario($total), 'right', 'header', 2);
                 
                 $tr->addRow();
-                $tr->addCell('Total: ' . FuncoesAuxiliares::formata_valor_monetario($total), 'right', 'footer', 5);
-                
-                $tr->addRow();
-                $tr->addCell(date('Y-m-d h:i:s'), 'center', 'footer', 4);
+                $tr->addCell(date('Y-m-d H:i:s'), 'right', 'footer', 2);
                 // stores the file
                 if (!file_exists("app/output/Lancamento.{$format}") OR is_writable("app/output/Lancamento.{$format}")) {
                     $tr->save("app/output/Lancamento.{$format}");
